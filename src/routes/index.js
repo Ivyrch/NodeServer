@@ -1,19 +1,20 @@
 const express = require('express');
 const router = express.Router();
 const response = require('../data/response');
+const { normalizeString, containsWord } = require('../Utils/utils');
 
 router.get('/', (req, res) => {
-    const query = req.query.q ? req.query.q.toLowerCase() : "";
-    console.log(">>>>>>>>>", query);
+    const search = req.query.q ? req.query.q : "";
+    console.log(">>>>>>>>>", search);
 
-    const containsWord = (string) => string.includes(query)
-
-    const filteredHighlights = response.highlights.filter(item =>
-        item.title.includes(query) || item.queries.some(i => containsWord(i))
-    );
-
+    const filteredHighlights = response.highlights.filter(item => {
+        const simpleTitle = normalizeString(item.title);
+        const simpleQueries = item.queries.map(normalizeString);
+        return containsWord(simpleTitle, search) || simpleQueries.some(srtQueries => containsWord(srtQueries, search));
+    });
+    
     const filteredSuggestions = response.suggestions.filter(item =>
-        item.includes(query)
+        item.includes(search)
     );
 
     if (filteredSuggestions.length > 0 || filteredHighlights.length > 0) {
@@ -29,7 +30,7 @@ router.get('/', (req, res) => {
         }));
         res.json({ highlights, suggestions });
     } else {
-        res.json({ url: `http://g1.globo.com/busca/?q=${encodeURIComponent(query)}` });
+        res.json({ url: `http://g1.globo.com/busca/?q=${encodeURIComponent(search)}` });
     }
 });
 
