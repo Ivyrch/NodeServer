@@ -3,8 +3,8 @@ function normalizeString(string) {
 }
 
 
-function containsWord(srtQueries, search) {
-    return normalizeString(srtQueries).includes(normalizeString(search));
+function containsWord(string, search) {
+    return string.includes(normalizeString(search));
 }
 
 module.exports = { normalizeString, containsWord };

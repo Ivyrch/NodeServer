@@ -1,12 +1,11 @@
 const express = require('express');
 const router = express.Router();
 const response = require('../data/response');
-const { normalizeString, containsWord } = require('../Utils/utils');
+const { normalizeString, containsWord } = require('../utils/utils');
 
 router.get('/', (req, res) => {
     const search = req.query.q ? req.query.q : "";
-    console.log(">>>>>>>>>", search);
-
+    
     const filteredHighlights = response.highlights.filter(item => {
         const simpleTitle = normalizeString(item.title);
         const simpleQueries = item.queries.map(normalizeString);
